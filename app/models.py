@@ -15,6 +15,13 @@ class Genre(db.Model):
     name = db.Column(db.String(255), unique=True, nullable=False)
 
 
+# Создаём вспомогательную таблицу "Избранное" базы данных
+favorite_table = db.Table(
+    "favorite",
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("movie_id", db.Integer, db.ForeignKey("movie.id"), primary_key=True)
+)
+
 # Создаём класс сущностей "Фильм" базы данных
 class Movie(db.Model):
     __tablename__ = 'movie'
@@ -41,11 +48,3 @@ class User(db.Model):
     surname = db.Column(db.String)
     favorite_genre = db.Column(db.String, db.ForeignKey("genre.id"))
     genre = db.relationship("Genre")
-    movies = db.relationship("Movie", secondary="favorite")
-
-
-# Создаём класс сущностей "Избранное" базы данных
-class Favorite(db.Model):
-    __tablename__ = 'favorite'
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey("movie.id"), primary_key=True)
