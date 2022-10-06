@@ -28,6 +28,14 @@ class MovieSchema(Schema):
 # Создаём класс сериализации сущностей "Пользователь" базы данных
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
-    username = fields.Str()
+    email = fields.Str()
     password = fields.Str()
-    role = fields.Str()
+    name = fields.Str()
+    surname = fields.Str()
+    favorite_genre = fields.Nested(GenreSchema)
+
+
+# Создаём класс сериализации сущностей "Избранное" базы данных
+class FavoriteSchema(Schema):
+    user_id = fields.Nested(UserSchema)
+    movie_id = fields.Nested(MovieSchema)

@@ -22,6 +22,7 @@ favorite_table = db.Table(
     db.Column("movie_id", db.Integer, db.ForeignKey("movie.id"), primary_key=True)
 )
 
+
 # Создаём класс сущностей "Фильм" базы данных
 class Movie(db.Model):
     __tablename__ = 'movie'
