@@ -7,6 +7,7 @@ from app.create_db import db
 from app.functions import auth_required
 from app.models import Director
 from app.schemes import DirectorSchema
+from constants import ITEMS_PER_PAGE
 
 directors_ns = Namespace("directors")  # Создаём пространство имён для режиссёров
 
@@ -19,11 +20,24 @@ directors_schema = DirectorSchema(many=True)
 class DirectorsView(Resource):
     @auth_required
     def get(self):
-        directors = db.session.query(Director).all()
-        return directors_schema.dump(directors), 200
+        """
+        Осуществляет выборку режиссёров
+        :return: Список режиссёров (полностью или постранично)
+        """
+        page_number = request.args.get("page")
+        if page_number:
+            page = db.session.query(Director).paginate(page=int(page_number), per_page=ITEMS_PER_PAGE).items
+            return directors_schema.dump(page), 200
+        else:
+            directors = db.session.query(Director).all()
+            return directors_schema.dump(directors), 200
 
     @auth_required
     def post(self):
+        """
+        Создаёт и сохраняет нового режиссёра
+        :return: Сохраняет экземпляр класса Director в таблицу directors БД
+        """
         post_data = request.json
         director = Director(**post_data)
         try:
@@ -39,10 +53,15 @@ class DirectorsView(Resource):
             return response
 
 
-@directors_ns.route("/<int:id>")
+@directors_ns.route("/<int:id>")  # Создаём маршрут выборки, изменения и удаления режиссёра
 class DirectorView(Resource):
     @auth_required
     def get(self, id):
+        """
+        Осуществляет выборку режиссёра
+        :param id: Ключ выборки режиссёра
+        :return: Режиссер в формате словаря
+        """
         director = db.session.query(Director).get(id)
         if director:
             return director_schema.dump(director), 200
@@ -51,6 +70,11 @@ class DirectorView(Resource):
 
     @auth_required
     def put(self, id):
+        """
+        Осуществляет полное редактирование режиссёра
+        :param id: Ключ выборки режиссёра
+        :return: Сохраняет изменённый экземпляр класса Director в таблицу directors БД
+        """
         put_data = request.json
         director = db.session.query(Director).get(id)
         if director:
@@ -68,6 +92,11 @@ class DirectorView(Resource):
 
     @auth_required
     def delete(self, id):
+        """
+        Осуществляет удаление режиссёра
+        :param id: Ключ выборки режиссёра
+        :return: Удаляет экземпляр класса Director из таблицы directors БД
+        """
         director = db.session.query(Director).get(id)
         if director:
             db.session.delete(director)
