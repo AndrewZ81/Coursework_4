@@ -15,7 +15,7 @@ auth_ns = Namespace("auth")  # Создаём пространство имён 
 class AuthView(Resource):
     def post(self):
         """
-        Создаёт нового пользователя
+        Создаёт и сохраняет нового пользователя
         :return: Сохраняет экземпляр класса User в таблицу users БД
         """
         post_data = request.json

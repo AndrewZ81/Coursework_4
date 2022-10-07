@@ -7,6 +7,7 @@ from app.create_db import db
 from app.functions import auth_required
 from app.models import Genre
 from app.schemes import GenreSchema
+from constants import ITEMS_PER_PAGE
 
 genres_ns = Namespace("genres")  # Создаём пространство имён для жанров
 
@@ -15,20 +16,29 @@ genre_schema = GenreSchema()
 genres_schema = GenreSchema(many=True)
 
 
-@genres_ns.route("/")
+@genres_ns.route("/")  # Создаём маршрут выборки списка жанров и создания жанра
 class GenresView(Resource):
-    #@auth_required
+    @auth_required
     def get(self):
-        page_number: int = int(request.args.get("page"))
+        """
+        Осуществляет выборку жанров
+        :return: Список жанров (полностью или постранично)
+        """
+        page_number = request.args.get("page")
         if page_number:
-            page = db.session.query(Genre).all().paginate(page=page_number, per_page=12).items
+            page = db.session.query(Genre).paginate(page=int(page_number), per_page=ITEMS_PER_PAGE).items
             return genres_schema.dump(page), 200
         else:
             genres = db.session.query(Genre).all()
             return genres_schema.dump(genres), 200
 
-    #auth_required
+
+    @auth_required
     def post(self):
+        """
+        Создаёт и сохраняет новый жанр
+        :return: Сохраняет экземпляр класса Genre в таблицу genres БД
+        """
         post_data = request.json
         genre = Genre(**post_data)
         try:
@@ -44,9 +54,9 @@ class GenresView(Resource):
             return response
 
 
-@genres_ns.route("/<int:id>")
+@genres_ns.route("/<int:id>")  # Создаём маршрут выборки, изменения и удаления жанра
 class GenreView(Resource):
-    #@auth_required
+    @auth_required
     def get(self, id):
         genre = db.session.query(Genre).get(id)
         if genre:
@@ -54,7 +64,7 @@ class GenreView(Resource):
         else:
             return "Такого жанра не существует", 404
 
-    #@auth_required
+    @auth_required
     def put(self, id):
         put_data = request.json
         genre = db.session.query(Genre).get(id)
@@ -71,7 +81,7 @@ class GenreView(Resource):
         else:
             return "Такого жанра не существует", 404
 
-    #@auth_required
+    @auth_required
     def delete(self, id):
         genre = db.session.query(Genre).get(id)
         if genre:
