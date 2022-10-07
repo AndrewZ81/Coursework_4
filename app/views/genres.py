@@ -32,7 +32,6 @@ class GenresView(Resource):
             genres = db.session.query(Genre).all()
             return genres_schema.dump(genres), 200
 
-
     @auth_required
     def post(self):
         """
@@ -58,6 +57,11 @@ class GenresView(Resource):
 class GenreView(Resource):
     @auth_required
     def get(self, id):
+        """
+        Осуществляет выборку жанра
+        :param id: Ключ выборки жанра
+        :return: Жанр в формате словаря
+        """
         genre = db.session.query(Genre).get(id)
         if genre:
             return genre_schema.dump(genre), 200
@@ -66,6 +70,11 @@ class GenreView(Resource):
 
     @auth_required
     def put(self, id):
+        """
+        Осуществляет полное редактирование жанра
+        :param id: Ключ выборки жанра
+        :return: Сохраняет изменённый экземпляр класса Genre в таблицу genres БД
+        """
         put_data = request.json
         genre = db.session.query(Genre).get(id)
         if genre:
@@ -83,6 +92,11 @@ class GenreView(Resource):
 
     @auth_required
     def delete(self, id):
+        """
+        Осуществляет удаление жанра
+        :param id: Ключ выборки жанра
+        :return: Удаляет экземпляр класса Genre из таблицы genres БД
+        """
         genre = db.session.query(Genre).get(id)
         if genre:
             db.session.delete(genre)
