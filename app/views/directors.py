@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask_restx import Resource, Namespace
 
 from app.create_db import db
-from app.functions import auth_required, admin_required
+from app.functions import auth_required
 from app.models import Director
 from app.schemes import DirectorSchema
 
@@ -22,7 +22,7 @@ class DirectorsView(Resource):
         directors = db.session.query(Director).all()
         return directors_schema.dump(directors), 200
 
-    @admin_required
+    @auth_required
     def post(self):
         post_data = request.json
         director = Director(**post_data)
@@ -49,7 +49,7 @@ class DirectorView(Resource):
         else:
             return "Такого режиссёра не существует", 404
 
-    @admin_required
+    @auth_required
     def put(self, id):
         put_data = request.json
         director = db.session.query(Director).get(id)
@@ -66,7 +66,7 @@ class DirectorView(Resource):
         else:
             return "Такого режиссёра не существует", 404
 
-    @admin_required
+    @auth_required
     def delete(self, id):
         director = db.session.query(Director).get(id)
         if director:

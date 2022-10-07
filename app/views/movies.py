@@ -7,7 +7,7 @@ from app.create_db import db
 from app.models import Movie
 from app.schemes import MovieSchema
 
-from app.functions import auth_required, admin_required
+from app.functions import auth_required
 
 movies_ns = Namespace("movies")  # Создаём пространство имён для фильмов
 
@@ -45,7 +45,7 @@ class MoviesView(Resource):
             movies = db.session.query(Movie).all()
             return movies_schema.dump(movies), 200
 
-    @admin_required
+    @auth_required
     def post(self):
         post_data = request.json
         movie = Movie(**post_data)
@@ -72,7 +72,7 @@ class MovieView(Resource):
         else:
             return "Такого фильма не существует", 404
 
-    @admin_required
+    @auth_required
     def put(self, id):
         put_data = request.json
         movie = db.session.query(Movie).get(id)
@@ -95,7 +95,7 @@ class MovieView(Resource):
         else:
             return "Такого фильма не существует", 404
 
-    @admin_required
+    @auth_required
     def delete(self, id):
         movie = db.session.query(Movie).get(id)
         if movie:
