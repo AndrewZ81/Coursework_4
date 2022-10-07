@@ -115,16 +115,13 @@ def auth_required(func):
 
 def get_user():
     """
-    Получает email и пароль авторизованного пользователя
-    :return: Словарь, содержащий email и пароль
+    Получает e-mail авторизованного пользователя
+    :return: Строку, содержащую e-mail
     """
     data = request.headers.get("Authorization")
     token = data.split("Bearer ")[-1]
     if check_token(token):
         user_data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        return {
-            "email": user_data["email"],
-            "password": user_data["password"]
-        }
+        return user_data["email"]
     else:
         return "Ошибка декодирования токена", 404
