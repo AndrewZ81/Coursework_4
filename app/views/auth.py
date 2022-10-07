@@ -14,6 +14,10 @@ auth_ns = Namespace("auth")  # Создаём пространство имён 
 @auth_ns.route("/register")  # Создаём маршрут регистрации пользователя
 class AuthView(Resource):
     def post(self):
+        """
+        Создаёт нового пользователя
+        :return: Сохраняет экземпляр класса User в таблицу users БД
+        """
         post_data = request.json
         email = post_data.get("email")
         user_password = post_data.get("password")
@@ -35,9 +39,14 @@ class AuthView(Resource):
             response.status_code = 201
             return response
 
+
 @auth_ns.route("/login")  # Создаём маршрут аутентификации и идентификации пользователя
 class AuthView(Resource):
     def post(self):
+        """
+        Создаёт токен доступа и токен обновления токенов
+        :return: Словарь JWT (access_token и refresh_token)
+        """
         post_data = request.json
         email = post_data.get("email")
         user_password = post_data.get("password")
@@ -57,6 +66,10 @@ class AuthView(Resource):
 
 
     def put(self):
+        """
+        Пересоздаёт токен доступа и токен обновления токенов
+        :return: Словарь JWT (access_token и refresh_token)
+        """
         put_data = request.json
         token = put_data.get("refresh_token")
         if check_token(token):
