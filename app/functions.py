@@ -94,30 +94,17 @@ def regenerate_tokens(token):
 
 
 def auth_required(func):
+    """
+    Создает декоратор авторизации пользователя
+    :param func: Декорируемая функция
+    :return: Декорируемую функцию или сообщение
+    """
     def wrapper(*args, **kwargs):
         data = request.headers.get("Authorization")
         if data:
             token = data.split("Bearer ")[-1]
             if check_token(token):
                 return func(*args, **kwargs)
-            else:
-                return "Ошибка декодирования токена", 404
-        else:
-            return "Вы не авторизованы", 401
-    return wrapper
-
-
-def admin_required(func):
-    def wrapper(*args, **kwargs):
-        data = request.headers.get("Authorization")
-        if data:
-            token = data.split("Bearer ")[-1]
-            if check_token(token):
-                user = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-                if user.get("role") == "admin":
-                    return func(*args, **kwargs)
-                else:
-                    return "Нет прав доступа", 403
             else:
                 return "Ошибка декодирования токена", 404
         else:
