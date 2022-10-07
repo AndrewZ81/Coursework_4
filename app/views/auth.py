@@ -35,6 +35,26 @@ class AuthView(Resource):
             response.status_code = 201
             return response
 
+@auth_ns.route("/login")  # Создаём маршрут аутентификации и идентификации пользователя
+class AuthView(Resource):
+    def post(self):
+        post_data = request.json
+        email = post_data.get("email")
+        user_password = post_data.get("password")
+        if not email:
+            return "Пустой адрес электронной почты", 404
+        elif not user_password:
+            return "Пустой пароль", 404
+        user = db.session.query(User).filter(User.email == email).first()
+        if not user:
+            return "Неверный адрес электронной почты", 404
+        else:
+            if compare_passwords(user.password, user_password):
+                response = jsonify(generate_tokens(post_data))
+                response.status_code = 201
+                return response
+            return "Неверный пароль", 404
+
 
     def put(self):
         put_data = request.json
