@@ -32,10 +32,4 @@ class UserSchema(Schema):
     password = fields.Str()
     name = fields.Str()
     surname = fields.Str()
-    favorite_genre = fields.Nested(GenreSchema)
-
-
-# Создаём класс сериализации сущностей "Избранное" базы данных
-class FavoriteSchema(Schema):
-    user = fields.Nested(UserSchema)
-    movie = fields.Nested(MovieSchema)
+    genre = fields.Nested(GenreSchema)
