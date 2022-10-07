@@ -56,6 +56,7 @@ def generate_tokens(data):
     }
     return tokens
 
+
 def check_token(token):
     """
     Проверяет токен
@@ -110,3 +111,20 @@ def auth_required(func):
         else:
             return "Вы не авторизованы", 401
     return wrapper
+
+
+def get_user():
+    """
+    Получает email и пароль авторизованного пользователя
+    :return: Словарь, содержащий email и пароль
+    """
+    data = request.headers.get("Authorization")
+    token = data.split("Bearer ")[-1]
+    if check_token(token):
+        user_data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return {
+            "email": user_data["email"],
+            "password": user_data["password"]
+        }
+    else:
+        return "Ошибка декодирования токена", 404
