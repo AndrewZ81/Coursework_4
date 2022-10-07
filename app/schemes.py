@@ -37,5 +37,5 @@ class UserSchema(Schema):
 
 # Создаём класс сериализации сущностей "Избранное" базы данных
 class FavoriteSchema(Schema):
-    user_id = fields.Nested(UserSchema)
-    movie_id = fields.Nested(MovieSchema)
+    user = fields.Nested(UserSchema)
+    movie = fields.Nested(MovieSchema)
