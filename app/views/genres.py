@@ -71,7 +71,7 @@ class GenreView(Resource):
     @auth_required
     def put(self, id):
         """
-        Осуществляет полное редактирование жанра
+        Осуществляет полное редактирование строки жанра
         :param id: Ключ выборки жанра
         :return: Сохраняет изменённый экземпляр класса Genre в таблицу genres БД
         """
@@ -93,7 +93,7 @@ class GenreView(Resource):
     @auth_required
     def delete(self, id):
         """
-        Осуществляет удаление жанра
+        Осуществляет удаление строки жанра
         :param id: Ключ выборки жанра
         :return: Удаляет экземпляр класса Genre из таблицы genres БД
         """
