@@ -125,3 +125,17 @@ def get_user():
         return user_data["email"]
     else:
         return "Ошибка декодирования токена", 404
+
+
+def get_user_password():
+    """
+    Получает пароль авторизованного пользователя
+    :return: Строку, содержащую пароль
+    """
+    data = request.headers.get("Authorization")
+    token = data.split("Bearer ")[-1]
+    if check_token(token):
+        user_data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return user_data["password"]
+    else:
+        return "Ошибка декодирования токена", 404
