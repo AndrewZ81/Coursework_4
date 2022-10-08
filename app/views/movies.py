@@ -19,10 +19,10 @@ movies_schema = MovieSchema(many=True)
 # Создаём маршрут выборки всех фильмов, сортировки фильмов по новизне и добавления фильма
 @movies_ns.route("/")
 class MoviesView(Resource):
-    #@auth_required
+    @auth_required
     def get(self):
         """
-        Осуществляет выборку фильмов и сортировку
+        Осуществляет выборку фильмов и их сортировку
         :return: Список фильмов (полностью или постранично, отсортированный или нет)
         """
         page_number = request.args.get("page")
@@ -43,6 +43,10 @@ class MoviesView(Resource):
 
     @auth_required
     def post(self):
+        """
+        Создаёт и сохраняет новый фильм
+        :return: Сохраняет экземпляр класса Movie в таблицу movies БД
+        """
         post_data = request.json
         movie = Movie(**post_data)
         try:
@@ -60,8 +64,13 @@ class MoviesView(Resource):
 
 @movies_ns.route("/<int:id>")  # Создаём маршрут выборки, изменения и удаления одного фильма
 class MovieView(Resource):
-    #@auth_required
+    @auth_required
     def get(self, id):
+        """
+        Осуществляет выборку фильма
+        :param id: Ключ выборки фильма
+        :return: Фильм в формате словаря
+        """
         movie = db.session.query(Movie).get(id)
         if movie:
             return movie_schema.dump(movie), 200
@@ -70,6 +79,11 @@ class MovieView(Resource):
 
     @auth_required
     def put(self, id):
+        """
+        Осуществляет полное редактирование строки фильма
+        :param id: Ключ выборки фильма
+        :return: Сохраняет изменённый экземпляр класса Movie в таблицу movies БД
+        """
         put_data = request.json
         movie = db.session.query(Movie).get(id)
         if movie:
@@ -93,6 +107,11 @@ class MovieView(Resource):
 
     @auth_required
     def delete(self, id):
+        """
+        Осуществляет удаление строки фильма
+        :param id: Ключ выборки фильма
+        :return: Удаляет экземпляр класса Movie из таблицы movies БД
+        """
         movie = db.session.query(Movie).get(id)
         if movie:
             db.session.delete(movie)
