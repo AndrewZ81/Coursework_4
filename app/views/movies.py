@@ -8,6 +8,7 @@ from app.models import Movie
 from app.schemes import MovieSchema
 
 from app.functions import auth_required
+from constants import ITEMS_PER_PAGE
 
 movies_ns = Namespace("movies")  # Создаём пространство имён для фильмов
 
@@ -15,32 +16,27 @@ movies_ns = Namespace("movies")  # Создаём пространство им�
 movie_schema = MovieSchema()
 movies_schema = MovieSchema(many=True)
 
-# Создаём маршрут выборки всех фильмов, фильмов по режиссёру/жанру/году и добавления фильма
+# Создаём маршрут выборки всех фильмов, сортировки фильмов по новизне и добавления фильма
 @movies_ns.route("/")
 class MoviesView(Resource):
-    @auth_required
+    #@auth_required
     def get(self):
-        director_id = request.args.get("director_id")
-        genre_id = request.args.get("genre_id")
-        year = request.args.get("year")
-        if director_id:
-            movies = db.session.query(Movie).filter(Movie.director_id == int(director_id)).all()
-            if movies:
-                return movies_schema.dump(movies), 200
-            else:
-                return "Такого режиссёра не существует", 404
-        elif genre_id:
-            movies = db.session.query(Movie).filter(Movie.genre_id == int(genre_id)).all()
-            if movies:
-                return movies_schema.dump(movies), 200
-            else:
-                return "Такого жанра не существует", 404
-        elif year:
-            movies = db.session.query(Movie).filter(Movie.year == int(year)).all()
-            if movies:
-                return movies_schema.dump(movies), 200
-            else:
-                return "Фильмов такого года не существует", 404
+        """
+        Осуществляет выборку фильмов и сортировку
+        :return: Список фильмов (полностью или постранично, отсортированный или нет)
+        """
+        page_number = request.args.get("page")
+        status = request.args.get("status")
+        if page_number and status == "new":
+            page = db.session.query(Movie).order_by(Movie.year.desc()).\
+                paginate(page=int(page_number), per_page=ITEMS_PER_PAGE).items
+            return movies_schema.dump(page), 200
+        elif page_number:
+            page = db.session.query(Movie).paginate(page=int(page_number), per_page=ITEMS_PER_PAGE).items
+            return movies_schema.dump(page), 200
+        elif status == "new":
+            movies = db.session.query(Movie).order_by(Movie.year.desc())
+            return movies_schema.dump(movies), 200
         else:
             movies = db.session.query(Movie).all()
             return movies_schema.dump(movies), 200
@@ -64,7 +60,7 @@ class MoviesView(Resource):
 
 @movies_ns.route("/<int:id>")  # Создаём маршрут выборки, изменения и удаления одного фильма
 class MovieView(Resource):
-    @auth_required
+    #@auth_required
     def get(self, id):
         movie = db.session.query(Movie).get(id)
         if movie:
