@@ -16,7 +16,7 @@ class Genre(db.Model):
 
 
 # Создаём вспомогательную таблицу "Избранное" базы данных
-favorite_table = db.Table(
+favorite = db.Table(
     "favorite",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
     db.Column("movie_id", db.Integer, db.ForeignKey("movie.id"), primary_key=True)
