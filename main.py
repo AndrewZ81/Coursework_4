@@ -8,6 +8,7 @@ from app.views.genres import genres_ns
 from app.views.directors import directors_ns
 from app.views.users import users_ns
 from app.views.auth import auth_ns
+from app.views.favorites import favorites_ns
 
 
 def create_app(config_obj):
@@ -36,6 +37,7 @@ def create_extensions(flask_app):
     api.add_namespace(genres_ns)
     api.add_namespace(users_ns)
     api.add_namespace(auth_ns)
+    api.add_namespace(favorites_ns)
 
 
 app_config = Config()  # Создаём экземпляр класса конфигурации приложения
