@@ -71,7 +71,7 @@ class DirectorView(Resource):
     @auth_required
     def put(self, id):
         """
-        Осуществляет полное редактирование режиссёра
+        Осуществляет полное редактирование строки режиссёра
         :param id: Ключ выборки режиссёра
         :return: Сохраняет изменённый экземпляр класса Director в таблицу directors БД
         """
@@ -93,7 +93,7 @@ class DirectorView(Resource):
     @auth_required
     def delete(self, id):
         """
-        Осуществляет удаление режиссёра
+        Осуществляет удаление строки режиссёра
         :param id: Ключ выборки режиссёра
         :return: Удаляет экземпляр класса Director из таблицы directors БД
         """
