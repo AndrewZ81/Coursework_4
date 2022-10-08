@@ -30,46 +30,27 @@ class UsersView(Resource):
         else:
             return "Такого пользователя не существует", 404
 
-    def post(self):
-        post_data = request.json
-        user_name = post_data.get("username")
-        user_password = post_data.get("password")
-        if not user_name:
-            return "Пустое имя пользователя", 404
-        elif not user_password:
-            return "Пустой пароль", 404
-        users = db.session.query(User).filter(User.username == user_name).all()
-        if not users:
-            return "Неверное имя пользователя", 404
-        else:
-            for i in users:
-                if compare_passwords(i.password, user_password):
-                    post_data["role"] = i.role
-                    response = jsonify(generate_tokens(post_data))
-                    response.status_code = 201
-                    return response
-        return "Неверный пароль", 404
-
-
-@users_ns.route("/<int:id>")
-class UserView(Resource):
-
-
-    def put(self, id):
-        put_data = request.json
-        user = db.session.query(User).get(id)
+    @auth_required
+    def patch(self):
+        """
+        Осуществляет изменение профиля пользователя
+        :return: Изменённый профиль пользователя в формате словаря
+        """
+        patch_data = request.json
+        user = db.session.query(User).filter(User.email == get_user()).first()
         if user:
             try:
-                user.username = put_data.get("username")
-                user.password = get_hash(put_data.get("password"))
-                user.role = put_data.get("role")
+                user.password = "Пароль скрыт в целях безопасности"
+                user.name = patch_data.get("name")
+                user.surname = patch_data.get("surname")
+                user.favorite_genre = patch_data.get("favorite_genre")
                 db.session.add(user)
                 db.session.commit()
             except sqlite3.OperationalError:
                 db.session.rollback()
                 return "Не удалось изменить пользователя", 404
             else:
-                return "Пользователь изменён", 200
+                return user_schema.dump(user), 200
         else:
             return "Такого пользователя не существует", 404
 
